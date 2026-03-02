@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gospel</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <h1>Gospel</h1>
+    <dl>
+      <dt>Repository:</dt>
+      <dd><a href="https://github.com/qat-inria/gospel">https://github.com/qat-inria/gospel</a></dd>
+      <dt>Commit:</dt>
+      <dd>
+        <input id="sha" type="text" value="$sha" size="38">
+        <button id="copy-sha">Copy</button>
+        <a href="https://github.com/qat-inria/gospel/commit/$sha">browse</a>
+      </dd>
+      <dt>Committed date:</dt>
+      <dd>$committed_date</dd>
+      <script>
+        const copy_sha_button = document.getElementById("copy-sha");
+        copy_sha_button.addEventListener("click", function() {
+            const input_sha = document.getElementById("sha")
+            navigator.clipboard.writeText(input_sha.value)
+                .then(() => {
+                    const copy_sha_button = document.getElementById("copy-sha");
+                    copy_sha_button.innerHTML = "Copied!";
+                })
+                .catch(err => {
+                    alert("Cannot copy");
+                });
+        });
+      </script>
+    </dl>
+    <figure>
+      <img src="$circuits_dirname/distribution.svg" />
+      <figcaption>Distribution of outcomes for qubit 0 in sampled circuits</figcaption>
+    </figure>
+    <figure>
+      <img src="hotgate_canonical.svg" />
+      <figcaption>Hot gate for the canonical order</figcaption>
+    </figure>
+    <figure>
+      <img src="hotgate_deviant.svg" />
+      <figcaption>Hot gate for the deviant order</figcaption>
+    </figure>
+    <p>
+      Download the archive of QASM files: <a href="$circuits_tarball">$circuits_tarball</a>.
+    </p>
+    <table id="data-table">
+      <thead>
+        <tr>
+          <th id="circuit-header">Circuits</th>
+          <th id="probability-header">Probability of outcome 1 for qubit 0</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Table rows will be inserted here -->
+      </tbody>
+    </table>
+
+    <script src="https://unpkg.com/@microsoft/quantum-viz.js"></script>
+    <script type="importmap">
+      {
+          "imports": {
+              "antlr4": "https://unpkg.com/antlr4@4.13.2/dist/antlr4.web.mjs",
+              "qasm3Lexer": "https://qat-inria.github.io/openqasm-parser/openqasm-javascript-parser-v3.1.0/qasm3Lexer.js",
+              "qasm3Parser": "https://qat-inria.github.io/openqasm-parser/openqasm-javascript-parser-v3.1.0/qasm3Parser.js",
+              "qasmViewer": "https://qat-inria.github.io/openqasm-parser/examples/qasmViewer.js",
+              "renderTable": "./renderTable.js",
+              "brickworkStateGraph": "./brickwork_state_graph.js"
+          }
+      }
+    </script>
+    <script type="module">
+      import renderJSONTable from "renderTable";
+
+      function loadJSON() {
+          renderJSONTable("$circuits_dirname", "$brickwork_state_table_dirname", "$circuits_dirname/table.json");
+      }
+
+      // Start the JSON download once the page has loaded.
+      window.onload = loadJSON;
+    </script>
+  </body>
+</html>
